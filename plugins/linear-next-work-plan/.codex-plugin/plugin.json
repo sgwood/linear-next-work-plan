@@ -1,0 +1,24 @@
+{
+  "name": "linear-next-work-plan",
+  "version": "0.1.0",
+  "description": "在 Codex 中新增下一步工作计划，并按项目类型和优先级同步为 Linear Issue。",
+  "author": {
+    "name": "sgwood"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Linear 下一步工作计划",
+    "shortDescription": "把下一步计划同步到 Linear 项目看板",
+    "longDescription": "将项目类型映射为 Linear Project、优先级映射为 Issue Priority、工作计划内容映射为 Issue，并提供按 Project 分组的可拖动看板设置指引。",
+    "developerName": "sgwood",
+    "category": "Productivity",
+    "capabilities": ["Linear", "Issue Write", "Board Workflow"],
+    "defaultPrompt": [
+      "新增一条下一步工作计划到 Linear。",
+      "预览这条工作计划将如何同步到 Linear。",
+      "帮我设置按项目类型分组的 Linear 看板。"
+    ]
+  },
+  "mcpServers": "./.mcp.json",
+  "apps": "./.app.json"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "enterprise-tools",
+  "interface": {
+    "displayName": "Enterprise Tools"
+  },
+  "plugins": [
+    {
+      "name": "linear-next-work-plan",
+      "source": {
+        "source": "local",
+        "path": "./plugins/linear-next-work-plan"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

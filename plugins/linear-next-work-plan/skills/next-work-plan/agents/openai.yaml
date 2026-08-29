@@ -1,0 +1,4 @@
+interface:
+  display_name: "Linear 下一步工作计划"
+  short_description: "新增、分类并同步个人下一步工作计划到 Linear 项目看板"
+  default_prompt: "新增一条下一步工作计划到 Linear。"
