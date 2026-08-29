@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -lt 1 ]; then
+  printf '%s\n' 'Linear 工作计划看板无法启动：缺少 MCP 服务入口。' >&2
+  exit 64
+fi
+
+if [ -n "${CODEX_MCP_NODE_PATH:-}" ] && [ -x "${CODEX_MCP_NODE_PATH}" ]; then
+  exec "${CODEX_MCP_NODE_PATH}" "$@"
+fi
+
+if command -v node >/dev/null 2>&1; then
+  exec node "$@"
+fi
+
+printf '%s\n' 'Linear 工作计划看板无法找到 Node.js 运行时。' >&2
+exit 127

@@ -1,22 +1,27 @@
 {
   "name": "linear-next-work-plan",
-  "version": "0.1.0",
-  "description": "在 Codex 中新增下一步工作计划，并按项目类型和优先级同步为 Linear Issue。",
+  "version": "0.2.0+codex.20260829215248",
+  "description": "\u5728 Codex \u4e2d\u65b0\u589e\u4e0b\u4e00\u6b65\u5de5\u4f5c\u8ba1\u5212\uff0c\u540c\u6b65\u4e3a Linear Issue\uff0c\u5e76\u901a\u8fc7\u53ef\u62d6\u52a8\u9762\u677f\u67e5\u770b\u8ba1\u5212\u770b\u677f\u3002",
   "author": {
     "name": "sgwood"
   },
   "skills": "./skills/",
   "interface": {
-    "displayName": "Linear 下一步工作计划",
-    "shortDescription": "把下一步计划同步到 Linear 项目看板",
-    "longDescription": "将项目类型映射为 Linear Project、优先级映射为 Issue Priority、工作计划内容映射为 Issue，并提供按 Project 分组的可拖动看板设置指引。",
+    "displayName": "Linear \u4e0b\u4e00\u6b65\u5de5\u4f5c\u8ba1\u5212",
+    "shortDescription": "\u540c\u6b65 Linear \u5e76\u663e\u793a\u53ef\u62d6\u52a8\u7684\u8ba1\u5212\u770b\u677f",
+    "longDescription": "\u5c06\u9879\u76ee\u7c7b\u578b\u6620\u5c04\u4e3a Linear Project\u3001\u4f18\u5148\u7ea7\u6620\u5c04\u4e3a Issue Priority\u3001\u5de5\u4f5c\u8ba1\u5212\u5185\u5bb9\u6620\u5c04\u4e3a Issue\uff0c\u5e76\u5728 Codex \u4e2d\u663e\u793a\u6309 Project \u5206\u7ec4\u3001\u53ef\u7b5b\u9009\u548c\u62d6\u52a8\u7684\u4ea4\u4e92\u5f0f\u8ba1\u5212\u770b\u677f\u3002",
     "developerName": "sgwood",
     "category": "Productivity",
-    "capabilities": ["Linear", "Issue Write", "Board Workflow"],
+    "capabilities": [
+      "Linear",
+      "Issue Write",
+      "Interactive Board",
+      "Drag and Drop"
+    ],
     "defaultPrompt": [
-      "新增一条下一步工作计划到 Linear。",
-      "预览这条工作计划将如何同步到 Linear。",
-      "帮我设置按项目类型分组的 Linear 看板。"
+      "\u65b0\u589e\u4e00\u6761\u4e0b\u4e00\u6b65\u5de5\u4f5c\u8ba1\u5212\u5230 Linear\u3002",
+      "\u9884\u89c8\u8fd9\u6761\u5de5\u4f5c\u8ba1\u5212\u5c06\u5982\u4f55\u540c\u6b65\u5230 Linear\u3002",
+      "\u663e\u793a\u6211\u7684\u4e0b\u4e00\u6b65\u5de5\u4f5c\u8ba1\u5212\u770b\u677f\u3002"
     ]
   },
   "mcpServers": "./.mcp.json",

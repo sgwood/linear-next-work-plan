@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>下一步工作计划看板</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --surface-subtle: #f0f2f5;
+        --border: #dfe3e8;
+        --border-strong: #c8cfd8;
+        --text: #17202a;
+        --muted: #66717f;
+        --accent: #276ef1;
+        --accent-soft: #e9f0ff;
+        --shadow: 0 1px 2px rgb(15 23 42 / 8%), 0 8px 24px rgb(15 23 42 / 6%);
+        --danger: #b42318;
+        --danger-soft: #feeceb;
+        --warning: #9a6700;
+        --warning-soft: #fff3d6;
+        --medium: #3d5a80;
+        --medium-soft: #e8eef6;
+        --low: #3d6c4b;
+        --low-soft: #e7f3ea;
+        --radius: 12px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101317;
+          --surface: #181c21;
+          --surface-subtle: #20252b;
+          --border: #30363d;
+          --border-strong: #434b55;
+          --text: #f2f4f7;
+          --muted: #a4adb8;
+          --accent: #75a7ff;
+          --accent-soft: #172b50;
+          --shadow: 0 1px 2px rgb(0 0 0 / 25%), 0 12px 28px rgb(0 0 0 / 20%);
+          --danger: #ff8b82;
+          --danger-soft: #4a2222;
+          --warning: #f4c152;
+          --warning-soft: #453713;
+          --medium: #a8c4e8;
+          --medium-soft: #25364b;
+          --low: #9fd4ad;
+          --low-soft: #1f3b28;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button,
+      select,
+      input {
+        color: var(--text);
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      .card:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .app {
+        display: grid;
+        grid-template-rows: auto auto minmax(420px, 1fr);
+        min-height: 620px;
+        max-height: min(820px, 88vh);
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 20px 22px 14px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .title-wrap {
+        min-width: 0;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.35;
+        letter-spacing: -0.02em;
+      }
+
+      .summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        margin-top: 7px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .summary strong {
+        color: var(--text);
+        font-weight: 650;
+      }
+
+      .top-actions {
+        display: flex;
+        flex: 0 0 auto;
+        gap: 8px;
+      }
+
+      .button {
+        min-height: 34px;
+        padding: 0 12px;
+        border: 1px solid var(--border-strong);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .button:hover {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .button.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #ffffff;
+      }
+
+      .filters {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 22px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .search {
+        width: min(320px, 36vw);
+        min-width: 180px;
+        height: 34px;
+        padding: 0 11px;
+        border: 1px solid var(--border-strong);
+        border-radius: 9px;
+        background: var(--surface-subtle);
+      }
+
+      .select {
+        height: 34px;
+        padding: 0 28px 0 10px;
+        border: 1px solid var(--border-strong);
+        border-radius: 9px;
+        background: var(--surface);
+      }
+
+      .check {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .check input {
+        accent-color: var(--accent);
+      }
+
+      .board-shell {
+        min-height: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 16px 22px 22px;
+      }
+
+      .board {
+        display: flex;
+        align-items: stretch;
+        gap: 14px;
+        min-width: min-content;
+        height: 100%;
+      }
+
+      .column {
+        display: grid;
+        grid-template-rows: auto minmax(120px, 1fr);
+        width: 300px;
+        min-width: 300px;
+        height: 100%;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-subtle);
+      }
+
+      .column[hidden] {
+        display: none;
+      }
+
+      .column.drag-target {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-soft);
+      }
+
+      .column-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        min-height: 48px;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .column-title {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .column-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 25px;
+        height: 25px;
+        padding: 0 7px;
+        border-radius: 999px;
+        background: var(--surface-subtle);
+        color: var(--muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .cards {
+        min-height: 120px;
+        overflow-y: auto;
+        padding: 10px;
+      }
+
+      .empty {
+        display: grid;
+        place-items: center;
+        min-height: 96px;
+        padding: 18px;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .empty[hidden] {
+        display: none;
+      }
+
+      .card {
+        position: relative;
+        margin-bottom: 9px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+      }
+
+      .card:last-child {
+        margin-bottom: 0;
+      }
+
+      .card:hover {
+        border-color: var(--border-strong);
+      }
+
+      .card.dragging {
+        opacity: 0.48;
+        cursor: grabbing;
+      }
+
+      .card[hidden] {
+        display: none;
+      }
+
+      .card-title {
+        margin: 0;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 650;
+        line-height: 1.45;
+      }
+
+      .card-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .identifier {
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        height: 21px;
+        padding: 0 7px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 650;
+      }
+
+      .priority-1 {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+
+      .priority-2 {
+        background: var(--warning-soft);
+        color: var(--warning);
+      }
+
+      .priority-3 {
+        background: var(--medium-soft);
+        color: var(--medium);
+      }
+
+      .priority-4,
+      .priority-0 {
+        background: var(--low-soft);
+        color: var(--low);
+      }
+
+      .status-pill {
+        background: var(--surface-subtle);
+        color: var(--muted);
+      }
+
+      .card-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 9px;
+        border-top: 1px solid var(--border);
+      }
+
+      .move-actions {
+        display: flex;
+        gap: 4px;
+      }
+
+      .icon-button,
+      .link-button {
+        height: 27px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .icon-button {
+        width: 29px;
+        padding: 0;
+        font-size: 15px;
+      }
+
+      .link-button {
+        padding: 0 7px;
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .icon-button:hover,
+      .link-button:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      .loading,
+      .empty-board {
+        display: grid;
+        place-items: center;
+        width: min(680px, calc(100vw - 44px));
+        height: 260px;
+        padding: 34px;
+        border: 1px dashed var(--border-strong);
+        border-radius: var(--radius);
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .loading strong,
+      .empty-board strong {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--text);
+        font-size: 15px;
+      }
+
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 50;
+        max-width: min(360px, calc(100vw - 36px));
+        padding: 10px 13px;
+        border: 1px solid var(--border-strong);
+        border-radius: 9px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        color: var(--text);
+        font-size: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(8px);
+        transition: opacity 140ms ease, transform 140ms ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 720px) {
+        .app {
+          min-height: 640px;
+          max-height: 92vh;
+        }
+
+        .topbar {
+          align-items: stretch;
+          flex-direction: column;
+          padding: 16px;
+        }
+
+        .top-actions {
+          justify-content: flex-end;
+        }
+
+        .filters {
+          align-items: stretch;
+          flex-wrap: wrap;
+          padding: 10px 16px;
+        }
+
+        .search {
+          width: 100%;
+        }
+
+        .board-shell {
+          padding: 12px 16px 18px;
+        }
+
+        .column {
+          width: min(286px, calc(100vw - 48px));
+          min-width: min(286px, calc(100vw - 48px));
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="title-wrap">
+          <h1 id="title">下一步工作计划</h1>
+          <div class="summary" id="summary" aria-live="polite">
+            <span>正在读取 Linear 计划…</span>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="button" id="fullscreen" type="button">全屏</button>
+          <button class="button primary" id="refresh" type="button">刷新</button>
+        </div>
+      </header>
+
+      <section class="filters" aria-label="看板筛选">
+        <input class="search" id="search" type="search" placeholder="搜索计划标题或编号" />
+        <select class="select" id="priority" aria-label="按优先级筛选">
+          <option value="all">全部优先级</option>
+          <option value="1">紧急</option>
+          <option value="2">高</option>
+          <option value="3">中</option>
+          <option value="4">低</option>
+          <option value="0">无优先级</option>
+        </select>
+        <select class="select" id="state" aria-label="按状态筛选">
+          <option value="active">未完成</option>
+          <option value="all">全部状态</option>
+          <option value="completed">已完成</option>
+        </select>
+        <label class="check">
+          <input id="show-empty" type="checkbox" />
+          显示空项目
+        </label>
+      </section>
+
+      <section class="board-shell" aria-label="工作计划看板">
+        <div class="board" id="board">
+          <div class="loading">
+            <div><strong>正在准备看板</strong>请稍候，Codex 正在加载 Linear 工作计划。</div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const PRIORITY = {
+        0: "无优先级",
+        1: "紧急",
+        2: "高",
+        3: "中",
+        4: "低",
+      };
+
+      const COMPLETED_TYPES = new Set(["completed", "canceled"]);
+      const DEMO_MODE = new URLSearchParams(location.search).has("demo");
+      const pendingRequests = new Map();
+      let nextRequestId = 1;
+      let currentBoard = null;
+      let pointerDrag = null;
+      let toastTimer = null;
+
+      const boardElement = document.getElementById("board");
+      const titleElement = document.getElementById("title");
+      const summaryElement = document.getElementById("summary");
+      const searchElement = document.getElementById("search");
+      const priorityElement = document.getElementById("priority");
+      const stateElement = document.getElementById("state");
+      const showEmptyElement = document.getElementById("show-empty");
+      const toastElement = document.getElementById("toast");
+
+      function request(method, params) {
+        const id = nextRequestId++;
+        window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            pendingRequests.delete(id);
+            reject(new Error(`Host request timed out: ${method}`));
+          }, 10000);
+          pendingRequests.set(id, {
+            resolve: (value) => {
+              clearTimeout(timeout);
+              resolve(value);
+            },
+            reject: (error) => {
+              clearTimeout(timeout);
+              reject(error);
+            },
+          });
+        });
+      }
+
+      async function callTool(name, args) {
+        if (DEMO_MODE) return { structuredContent: { saved: true } };
+        try {
+          return await request("tools/call", { name, arguments: args });
+        } catch (bridgeError) {
+          if (window.openai?.callTool) return window.openai.callTool(name, args);
+          throw bridgeError;
+        }
+      }
+
+      async function sendFollowUp(prompt) {
+        if (DEMO_MODE) {
+          showToast("演示模式：已生成 Linear 更新请求");
+          return;
+        }
+        if (window.openai?.sendFollowUpMessage) {
+          await window.openai.sendFollowUpMessage({ prompt, scrollToBottom: false });
+          return;
+        }
+        await request("ui/message", {
+          role: "user",
+          content: [{ type: "text", text: prompt }],
+        });
+      }
+
+      function showToast(message) {
+        toastElement.textContent = message;
+        toastElement.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastElement.classList.remove("show"), 2600);
+      }
+
+      function setSummary(summary) {
+        summaryElement.replaceChildren();
+        const entries = [
+          ["计划", summary.total],
+          ["进行中", summary.active],
+          ["已完成", summary.completed],
+          ["项目", summary.projects],
+        ];
+        for (const [label, value] of entries) {
+          const item = document.createElement("span");
+          const strong = document.createElement("strong");
+          strong.textContent = String(value);
+          item.append(strong, ` ${label}`);
+          summaryElement.append(item);
+        }
+      }
+
+      function cardMatchesFilters(card) {
+        const query = searchElement.value.trim().toLocaleLowerCase("zh-CN");
+        const priority = priorityElement.value;
+        const state = stateElement.value;
+        const searchable = `${card.dataset.title} ${card.dataset.identifier}`.toLocaleLowerCase("zh-CN");
+        const completed = COMPLETED_TYPES.has(String(card.dataset.statusType).toLowerCase());
+        return (
+          (!query || searchable.includes(query)) &&
+          (priority === "all" || card.dataset.priority === priority) &&
+          (state === "all" || (state === "completed" ? completed : !completed))
+        );
+      }
+
+      function applyFilters() {
+        for (const column of document.querySelectorAll(".column")) {
+          let visibleCount = 0;
+          for (const card of column.querySelectorAll(".card")) {
+            const visible = cardMatchesFilters(card);
+            card.hidden = !visible;
+            if (visible) visibleCount += 1;
+          }
+          column.querySelector(".column-count").textContent = String(visibleCount);
+          const empty = column.querySelector(".empty");
+          empty.hidden = visibleCount !== 0;
+          column.hidden = visibleCount === 0 && !showEmptyElement.checked;
+        }
+        notifyHeight();
+      }
+
+      function priorityPill(priority) {
+        const pill = document.createElement("span");
+        pill.className = `pill priority-${priority}`;
+        pill.textContent = PRIORITY[priority] || PRIORITY[0];
+        return pill;
+      }
+
+      function iconButton(label, text, onClick) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "icon-button";
+        button.setAttribute("aria-label", label);
+        button.title = label;
+        button.textContent = text;
+        button.addEventListener("click", onClick);
+        return button;
+      }
+
+      function updateCounts() {
+        for (const column of document.querySelectorAll(".column")) {
+          const visibleCards = [...column.querySelectorAll(".card")].filter((card) => !card.hidden);
+          column.querySelector(".column-count").textContent = String(visibleCards.length);
+          column.querySelector(".empty").hidden = visibleCards.length !== 0;
+        }
+      }
+
+      function snapshotOrder() {
+        return [...document.querySelectorAll(".column")].map((column) => ({
+          projectKey: column.dataset.projectKey,
+          projectName: column.dataset.projectName,
+          issueIds: [...column.querySelectorAll(".card")].map((card) => card.dataset.issueId),
+        }));
+      }
+
+      async function persistCurrentOrder() {
+        const columns = snapshotOrder();
+        window.openai?.setWidgetState?.({ columns });
+        await callTool("save_board_order", { columns });
+      }
+
+      async function handleMove(card, fromColumn, toColumn) {
+        updateCounts();
+        try {
+          await persistCurrentOrder();
+          if (fromColumn.dataset.projectKey === toColumn.dataset.projectKey) {
+            showToast("顺序已保存");
+            return;
+          }
+
+          card.dataset.projectKey = toColumn.dataset.projectKey;
+          card.dataset.projectName = toColumn.dataset.projectName;
+          showToast("顺序已保存，正在同步 Linear 项目…");
+          const identifier = card.dataset.identifier || card.dataset.issueId;
+          const targetProject = toColumn.dataset.projectName;
+          await sendFollowUp(
+            `我刚在“下一步工作计划”看板中把 ${identifier} 拖到了项目“${targetProject}”。` +
+              `这是我明确发起的本次更新。请调用 Linear save_issue，仅把该 Issue 的 project 更新为“${targetProject}”，` +
+              `不要新建 Issue；成功后重新读取带“Codex 工作计划”标签的计划并调用 render_work_plan_board 刷新看板。`,
+          );
+        } catch (error) {
+          console.error(error);
+          showToast("保存失败，请刷新后重试");
+        }
+      }
+
+      function moveCardWithinColumn(card, direction) {
+        const column = card.closest(".column");
+        const sibling = direction < 0 ? card.previousElementSibling : card.nextElementSibling;
+        if (!sibling || !sibling.classList.contains("card")) return;
+        if (direction < 0) sibling.before(card);
+        else sibling.after(card);
+        handleMove(card, column, column);
+      }
+
+      function moveCardAcrossColumn(card, direction) {
+        const column = card.closest(".column");
+        const columns = [...document.querySelectorAll(".column:not([hidden])")];
+        const index = columns.indexOf(column);
+        const target = columns[index + direction];
+        if (!target) return;
+        target.querySelector(".cards").append(card);
+        handleMove(card, column, target);
+      }
+
+      function createCard(issue) {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.tabIndex = 0;
+        card.dataset.issueId = issue.id;
+        card.dataset.identifier = issue.identifier;
+        card.dataset.title = issue.title;
+        card.dataset.priority = String(issue.priority);
+        card.dataset.statusType = issue.statusType;
+        card.dataset.projectKey = issue.projectKey;
+        card.dataset.projectName = issue.projectName;
+
+        const title = document.createElement("p");
+        title.className = "card-title";
+        title.textContent = issue.title;
+
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+        const identifier = document.createElement("span");
+        identifier.className = "identifier";
+        identifier.textContent = issue.identifier;
+        const status = document.createElement("span");
+        status.className = "pill status-pill";
+        status.textContent = issue.statusName;
+        meta.append(identifier, priorityPill(issue.priority), status);
+
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+        const moveActions = document.createElement("div");
+        moveActions.className = "move-actions";
+        moveActions.append(
+          iconButton("移到左侧项目", "←", () => moveCardAcrossColumn(card, -1)),
+          iconButton("向上移动", "↑", () => moveCardWithinColumn(card, -1)),
+          iconButton("向下移动", "↓", () => moveCardWithinColumn(card, 1)),
+          iconButton("移到右侧项目", "→", () => moveCardAcrossColumn(card, 1)),
+        );
+        actions.append(moveActions);
+
+        if (issue.url) {
+          const open = document.createElement("button");
+          open.type = "button";
+          open.className = "link-button";
+          open.textContent = "打开 Linear";
+          open.addEventListener("click", async () => {
+            if (window.openai?.openExternal) await window.openai.openExternal({ href: issue.url });
+            else window.open(issue.url, "_blank", "noopener,noreferrer");
+          });
+          actions.append(open);
+        }
+
+        card.append(title, meta, actions);
+        card.addEventListener("pointerdown", (event) => {
+          if (event.button !== 0 || event.target.closest("button")) return;
+          pointerDrag = {
+            card,
+            pointerId: event.pointerId,
+            fromColumn: card.closest(".column"),
+            startX: event.clientX,
+            startY: event.clientY,
+            moved: false,
+          };
+          card.setPointerCapture(event.pointerId);
+        });
+        card.addEventListener("pointermove", (event) => {
+          if (!pointerDrag || pointerDrag.card !== card || pointerDrag.pointerId !== event.pointerId) return;
+          const distance = Math.hypot(event.clientX - pointerDrag.startX, event.clientY - pointerDrag.startY);
+          if (!pointerDrag.moved && distance < 7) return;
+
+          pointerDrag.moved = true;
+          event.preventDefault();
+          card.classList.add("dragging");
+          document.querySelectorAll(".column").forEach((column) => column.classList.remove("drag-target"));
+
+          const element = document.elementFromPoint(event.clientX, event.clientY);
+          const cards = element?.closest?.(".cards");
+          if (!cards) return;
+          const targetColumn = cards.closest(".column");
+          targetColumn.classList.add("drag-target");
+          const after = dragAfterElement(cards, event.clientY);
+          if (after) cards.insertBefore(card, after);
+          else cards.insertBefore(card, cards.querySelector(".empty"));
+        });
+        card.addEventListener("pointerup", (event) => {
+          if (!pointerDrag || pointerDrag.card !== card || pointerDrag.pointerId !== event.pointerId) return;
+          const completedDrag = pointerDrag;
+          pointerDrag = null;
+          card.releasePointerCapture(event.pointerId);
+          card.classList.remove("dragging");
+          document.querySelectorAll(".column").forEach((column) => column.classList.remove("drag-target"));
+          const toColumn = card.closest(".column");
+          if (completedDrag.moved && completedDrag.fromColumn && toColumn) {
+            handleMove(card, completedDrag.fromColumn, toColumn);
+          }
+        });
+        card.addEventListener("pointercancel", (event) => {
+          if (!pointerDrag || pointerDrag.card !== card || pointerDrag.pointerId !== event.pointerId) return;
+          pointerDrag = null;
+          card.classList.remove("dragging");
+          document.querySelectorAll(".column").forEach((column) => column.classList.remove("drag-target"));
+        });
+        return card;
+      }
+
+      function dragAfterElement(container, y) {
+        const cards = [...container.querySelectorAll(".card:not(.dragging):not([hidden])")];
+        return cards.reduce(
+          (closest, card) => {
+            const box = card.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            return offset < 0 && offset > closest.offset ? { offset, element: card } : closest;
+          },
+          { offset: Number.NEGATIVE_INFINITY, element: null },
+        ).element;
+      }
+
+      function createColumn(column) {
+        const section = document.createElement("section");
+        section.className = "column";
+        section.dataset.projectKey = column.key;
+        section.dataset.projectName = column.name;
+
+        const header = document.createElement("header");
+        header.className = "column-header";
+        const name = document.createElement("div");
+        name.className = "column-title";
+        name.title = column.name;
+        name.textContent = column.name;
+        const count = document.createElement("span");
+        count.className = "column-count";
+        count.textContent = String(column.issues.length);
+        header.append(name, count);
+
+        const cards = document.createElement("div");
+        cards.className = "cards";
+        cards.dataset.projectKey = column.key;
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "暂无符合筛选条件的计划";
+        empty.hidden = column.issues.length !== 0;
+        cards.append(...column.issues.map(createCard), empty);
+
+        section.append(header, cards);
+        return section;
+      }
+
+      function renderBoard(payload) {
+        if (!payload || !Array.isArray(payload.columns)) return;
+        currentBoard = payload;
+        titleElement.textContent = payload.title || "下一步工作计划";
+        setSummary(payload.summary || { total: 0, active: 0, completed: 0, projects: 0 });
+        boardElement.replaceChildren();
+
+        if (payload.columns.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "empty-board";
+          const content = document.createElement("div");
+          const strong = document.createElement("strong");
+          strong.textContent = "还没有工作计划";
+          content.append(strong, "新增计划后，使用“显示我的工作计划看板”即可在这里查看。 ");
+          empty.append(content);
+          boardElement.append(empty);
+        } else {
+          boardElement.append(...payload.columns.map(createColumn));
+        }
+        applyFilters();
+        notifyHeight();
+      }
+
+      function notifyHeight() {
+        const height = Math.min(document.documentElement.scrollHeight, 820);
+        window.openai?.notifyIntrinsicHeight?.({ height });
+      }
+
+      window.addEventListener(
+        "message",
+        (event) => {
+          if (event.source !== window.parent) return;
+          const message = event.data;
+          if (!message || message.jsonrpc !== "2.0") return;
+
+          if (message.id !== undefined && pendingRequests.has(message.id)) {
+            const pending = pendingRequests.get(message.id);
+            pendingRequests.delete(message.id);
+            if (message.error) pending.reject(message.error);
+            else pending.resolve(message.result);
+            return;
+          }
+
+          if (message.method === "ui/notifications/tool-result") {
+            renderBoard(message.params?.structuredContent);
+          }
+        },
+        { passive: true },
+      );
+
+      searchElement.addEventListener("input", applyFilters);
+      priorityElement.addEventListener("change", applyFilters);
+      stateElement.addEventListener("change", applyFilters);
+      showEmptyElement.addEventListener("change", applyFilters);
+
+      document.getElementById("refresh").addEventListener("click", async () => {
+        try {
+          showToast("正在请求刷新 Linear 数据…");
+          await sendFollowUp(
+            "请刷新我的下一步工作计划看板：读取带“Codex 工作计划”标签的全部 Linear Issue 和可用 Project，" +
+              "然后调用 render_work_plan_board。不要创建或修改任何 Issue。",
+          );
+        } catch (error) {
+          console.error(error);
+          showToast("无法发起刷新，请在对话中输入“刷新工作计划看板”");
+        }
+      });
+
+      document.getElementById("fullscreen").addEventListener("click", async () => {
+        if (window.openai?.requestDisplayMode) {
+          await window.openai.requestDisplayMode({ mode: "fullscreen" });
+        } else {
+          showToast("当前 Codex 版本不支持全屏面板");
+        }
+      });
+
+      const demoBoard = {
+        version: 1,
+        title: "下一步工作计划",
+        generatedAt: new Date().toISOString(),
+        summary: { total: 4, active: 3, completed: 1, projects: 3 },
+        columns: [
+          {
+            id: "project-admission",
+            key: "project-admission",
+            name: "招生模块",
+            issues: [
+              {
+                id: "issue-ent-17",
+                identifier: "ENT-17",
+                title: "完成线索查重回归并整理未通过项",
+                priority: 2,
+                projectKey: "project-admission",
+                projectName: "招生模块",
+                statusName: "进行中",
+                statusType: "started",
+                url: "https://linear.app/",
+              },
+              {
+                id: "issue-ent-21",
+                identifier: "ENT-21",
+                title: "复核招生角色的数据权限边界",
+                priority: 1,
+                projectKey: "project-admission",
+                projectName: "招生模块",
+                statusName: "待处理",
+                statusType: "unstarted",
+                url: "https://linear.app/",
+              },
+            ],
+          },
+          {
+            id: "project-family",
+            key: "project-family",
+            name: "家校服务",
+            issues: [
+              {
+                id: "issue-ent-25",
+                identifier: "ENT-25",
+                title: "检查家长端活动报名回流",
+                priority: 3,
+                projectKey: "project-family",
+                projectName: "家校服务",
+                statusName: "待处理",
+                statusType: "unstarted",
+                url: "https://linear.app/",
+              },
+            ],
+          },
+          {
+            id: "project-system",
+            key: "project-system",
+            name: "系统管理",
+            issues: [
+              {
+                id: "issue-ent-13",
+                identifier: "ENT-13",
+                title: "整理工作空间切换验收记录",
+                priority: 4,
+                projectKey: "project-system",
+                projectName: "系统管理",
+                statusName: "已完成",
+                statusType: "completed",
+                url: "https://linear.app/",
+              },
+            ],
+          },
+          { id: "project-mall", key: "project-mall", name: "商城模块", issues: [] },
+        ],
+      };
+
+      const initialOutput = window.openai?.toolOutput;
+      if (initialOutput?.columns) renderBoard(initialOutput);
+      else if (DEMO_MODE) renderBoard(demoBoard);
+    </script>
+  </body>
+</html>
